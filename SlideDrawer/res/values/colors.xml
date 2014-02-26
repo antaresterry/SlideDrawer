@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="bg_gradient_top">#b9c3ff</color>
+    <color name="bg_gradient_bottom">#432aff</color>
+    <color name="bg_action_bar">#604fff</color>
+    <color name="text_action_bar">#f2f2f2</color>
+
+</resources>
