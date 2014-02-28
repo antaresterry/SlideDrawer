@@ -3,6 +3,7 @@
 	<name>SlideDrawer</name>
 	<comment></comment>
 	<projects>
+		<project>jumblr</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
