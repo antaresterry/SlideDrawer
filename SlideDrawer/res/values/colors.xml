@@ -5,5 +5,9 @@
     <color name="bg_gradient_bottom">#432aff</color>
     <color name="bg_action_bar">#604fff</color>
     <color name="text_action_bar">#f2f2f2</color>
+    <color name="tumblr_bg">#2c465d</color>
+    <color name="tumblr_button_unselected">#529ecc</color>
+    <color name="tumblr_button_selected">#4e96c2</color>
+    <color name="silk_white">#ffffff</color>
 
 </resources>

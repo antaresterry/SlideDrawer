@@ -1,9 +1,20 @@
 package com.antares.slidedrawer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -15,12 +26,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.antares.slidedrawer.adapter.DrawerAdapter;
 import com.antares.slidedrawer.data.DrawerItem;
 import com.antares.slidedrawer.fragments.AboutFragment;
 import com.antares.slidedrawer.fragments.HomeFragment;
+import com.antares.slidedrawer.fragments.SettingsFragment;
 
 public class HomeActivity extends ActionBarActivity {
 
@@ -47,6 +61,42 @@ public class HomeActivity extends ActionBarActivity {
 		for (int i = 0; i < drawerTitles.length; i++) {
 			drawerItems.add(i, new DrawerItem(drawerTitles[i], drawerIcons[i]));
 		}
+		View panelTop = getLayoutInflater().inflate(R.layout.panel_top, null);
+		String downloadPath = this.getCacheDir().getAbsolutePath();
+		File file = new File(downloadPath, "Avatar.PNG");
+		if (file.exists()) {
+			Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+			if (bitmap != null) {
+				Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+						bitmap.getHeight(), Config.ARGB_8888);
+				Canvas canvas = new Canvas(output);
+				BitmapShader shader;
+				shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP,
+						Shader.TileMode.CLAMP);
+
+				Paint paint = new Paint();
+				paint.setAntiAlias(true);
+				paint.setShader(shader);
+
+				RectF rect = new RectF(0.0f, 0.0f, bitmap.getWidth(),
+						bitmap.getHeight());
+
+				// rect contains the bounds of the shape
+				// radius is the radius in pixels of the rounded corners
+				// paint contains the shader that will texture the shape
+				canvas.drawRoundRect(rect, 10, 10, paint);
+				bitmap = output;
+			}
+			((ImageView) panelTop.findViewById(R.id.ivAvatar))
+					.setImageBitmap(bitmap);
+			((TextView) panelTop.findViewById(R.id.tvBlogName))
+					.setText(Constants.userInfo.blogs[Constants.userInfo.primary].title);
+			((TextView) panelTop.findViewById(R.id.tvBlogDescription))
+					.setText("Followers: "
+							+ Constants.userInfo.blogs[Constants.userInfo.primary].followers);
+		}
+		drawerList.addHeaderView(panelTop, null, false);
 		// Set the adapter for the list view
 		drawerAdapter = new DrawerAdapter(drawerItems, this);
 		drawerList.setAdapter(drawerAdapter);
@@ -79,10 +129,10 @@ public class HomeActivity extends ActionBarActivity {
 
 		// Set the drawer toggle as the DrawerListener
 		drawerLayout.setDrawerListener(drawerToggle);
-
+		drawerList.setItemChecked(1, true);
+		selectItem(1);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		selectItem(0);
 	}
 
 	@Override
@@ -121,7 +171,8 @@ public class HomeActivity extends ActionBarActivity {
 		public void onItemClick(
 				@SuppressWarnings("rawtypes") AdapterView parent, View view,
 				int position, long id) {
-			selectItem(position);
+			if (position > 0)
+				selectItem(position);
 		}
 	}
 
@@ -149,7 +200,7 @@ public class HomeActivity extends ActionBarActivity {
 		Fragment fragment;
 		FragmentManager fragmentManager;
 		switch (position) {
-		case 0:
+		case 1:
 			fragment = new HomeFragment();
 
 			// Insert the fragment by replacing any existing fragment
@@ -160,10 +211,24 @@ public class HomeActivity extends ActionBarActivity {
 			// Highlight the selected item, update the title, and close the
 			// drawer
 			drawerList.setItemChecked(position, true);
-			setTitle(drawerTitles[position]);
+			setTitle(drawerTitles[position - 1]);
 			drawerLayout.closeDrawer(drawerList);
 			break;
 		case 2:
+			fragment = new SettingsFragment();
+
+			// Insert the fragment by replacing any existing fragment
+			fragmentManager = getSupportFragmentManager();
+			fragmentManager.beginTransaction()
+					.replace(R.id.content_frame, fragment).commit();
+
+			// Highlight the selected item, update the title, and close the
+			// drawer
+			drawerList.setItemChecked(position, true);
+			setTitle(drawerTitles[position - 1]);
+			drawerLayout.closeDrawer(drawerList);
+			break;
+		case 3:
 			fragment = new AboutFragment();
 
 			// Insert the fragment by replacing any existing fragment
@@ -174,7 +239,7 @@ public class HomeActivity extends ActionBarActivity {
 			// Highlight the selected item, update the title, and close the
 			// drawer
 			drawerList.setItemChecked(position, true);
-			setTitle(drawerTitles[position]);
+			setTitle(drawerTitles[position - 1]);
 			drawerLayout.closeDrawer(drawerList);
 			break;
 		default:
@@ -186,5 +251,20 @@ public class HomeActivity extends ActionBarActivity {
 	public void setTitle(CharSequence title) {
 		this.title = title;
 		getSupportActionBar().setTitle(this.title);
+	}
+
+	public void onClick(View vi) {
+		int viewId = vi.getId();
+		switch (viewId) {
+		case R.id.logoutButton:
+			SharedPreferences oAuth = this.getSharedPreferences(
+					Constants.PREF_NAME, 0);
+			Editor editor = oAuth.edit();
+			editor.clear().commit();
+			finish();
+			break;
+		default:
+			break;
+		}
 	}
 }

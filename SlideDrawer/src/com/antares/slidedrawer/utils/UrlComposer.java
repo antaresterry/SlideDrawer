@@ -27,7 +27,7 @@ public class UrlComposer {
 	}
 
 	// Blog Avatar With Size
-	public static String composeUrlBlogAvatarWithSize(String baseHostname,
+	public static String composeUrlBlogAvatar(String baseHostname,
 			int size) {
 		String composeResult = "";
 
@@ -71,9 +71,8 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Posts
-	public static String composeUrlBlogPostsWithType(String baseHostname,
-			String type) {
+	// Blog Posts With Type
+	public static String composeUrlBlogPosts(String baseHostname, String type) {
 		String composeResult = "";
 
 		composeResult = Constants.URL_REQUEST + Constants.REQUEST_BLOG + "/"
@@ -176,6 +175,17 @@ public class UrlComposer {
 
 		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
 				+ Constants.REQUEST_USER_DASHBOARD;
+
+		return composeResult;
+	}
+
+	// User Dashboard With Type
+	public static String composeUrlUserDashboard(String type) {
+		String composeResult = "";
+
+		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+				+ Constants.REQUEST_USER_DASHBOARD + "?"
+				+ Constants.REQUEST_PARAM_TYPE + "=" + type;
 
 		return composeResult;
 	}

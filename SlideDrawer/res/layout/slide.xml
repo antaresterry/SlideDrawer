@@ -9,7 +9,7 @@
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_gradient_top" />
+        android:background="@color/tumblr_bg" />
     <!-- The navigation drawer -->
 
     <ListView
@@ -17,9 +17,9 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/bg_gradient_bottom"
+        android:background="@android:color/darker_gray"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/darker_gray"
+        android:divider="@android:color/white"
         android:dividerHeight="1dp" />
 
 </android.support.v4.widget.DrawerLayout>
