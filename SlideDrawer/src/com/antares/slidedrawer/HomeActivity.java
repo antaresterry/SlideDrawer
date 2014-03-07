@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.antares.slidedrawer.adapter.DrawerAdapter;
@@ -28,6 +29,7 @@ public class HomeActivity extends ActionBarActivity {
 	private Integer[] drawerIcons;
 	private List<DrawerItem> drawerItems;
 	private DrawerLayout drawerLayout;
+	private LinearLayout drawerFragment;
 	private ListView drawerList;
 	private CharSequence title;
 	private ActionBarDrawerToggle drawerToggle;
@@ -41,7 +43,6 @@ public class HomeActivity extends ActionBarActivity {
 		drawerTitles = getResources().getStringArray(R.array.menu_drawer);
 		drawerIcons = new Integer[] { R.drawable.social_group,
 				R.drawable.action_settings, R.drawable.action_about };
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 		drawerItems = new ArrayList<DrawerItem>();
 		for (int i = 0; i < drawerTitles.length; i++) {
@@ -55,31 +56,39 @@ public class HomeActivity extends ActionBarActivity {
 
 		title = getTitle();
 		drawerTitle = getResources().getString(R.string.drawer_title);
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-				R.drawable.ic_drawer, R.string.drawer_open,
-				R.string.drawer_close) {
+		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE
+				|| (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+			// on a large screen device ...
+			drawerFragment = (LinearLayout) findViewById(R.id.drawer_layout);
+		} else {
+			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+					R.drawable.ic_drawer, R.string.drawer_open,
+					R.string.drawer_close) {
 
-			/** Called when a drawer has settled in a completely closed state. */
-			public void onDrawerClosed(View view) {
-				super.onDrawerClosed(view);
-				getSupportActionBar().setTitle(title);
-				supportInvalidateOptionsMenu();
-				// creates call to onPrepareOptionsMenu()
-			}
+				/**
+				 * Called when a drawer has settled in a completely closed
+				 * state.
+				 */
+				public void onDrawerClosed(View view) {
+					super.onDrawerClosed(view);
+					getSupportActionBar().setTitle(title);
+					supportInvalidateOptionsMenu();
+					// creates call to onPrepareOptionsMenu()
+				}
 
-			/** Called when a drawer has settled in a completely open state. */
-			public void onDrawerOpened(View drawerView) {
-				super.onDrawerOpened(drawerView);
-				getSupportActionBar().setTitle(drawerTitle);
-				supportInvalidateOptionsMenu();
-				// creates call to onPrepareOptionsMenu()
-			}
-		};
+				/** Called when a drawer has settled in a completely open state. */
+				public void onDrawerOpened(View drawerView) {
+					super.onDrawerOpened(drawerView);
+					getSupportActionBar().setTitle(drawerTitle);
+					supportInvalidateOptionsMenu();
+					// creates call to onPrepareOptionsMenu()
+				}
+			};
 
-		// Set the drawer toggle as the DrawerListener
-		drawerLayout.setDrawerListener(drawerToggle);
-
+			// Set the drawer toggle as the DrawerListener
+			drawerLayout.setDrawerListener(drawerToggle);
+		}
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		selectItem(0);
@@ -89,13 +98,21 @@ public class HomeActivity extends ActionBarActivity {
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
-		drawerToggle.syncState();
+		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE
+				|| (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+		} else
+			drawerToggle.syncState();
 	}
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		drawerToggle.onConfigurationChanged(newConfig);
+		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE
+				|| (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+		} else
+			drawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	/* Called whenever we call invalidateOptionsMenu() */
@@ -103,8 +120,13 @@ public class HomeActivity extends ActionBarActivity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// If the nav drawer is open, hide action items related to the content
 		// view
-		boolean drawerOpen = drawerLayout.isDrawerOpen(drawerList);
-		menu.findItem(R.id.action_exit).setVisible(!drawerOpen);
+		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE
+				|| (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+		} else {
+			boolean drawerOpen = drawerLayout.isDrawerOpen(drawerList);
+			menu.findItem(R.id.action_exit).setVisible(!drawerOpen);
+		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -161,7 +183,11 @@ public class HomeActivity extends ActionBarActivity {
 			// drawer
 			drawerList.setItemChecked(position, true);
 			setTitle(drawerTitles[position]);
-			drawerLayout.closeDrawer(drawerList);
+			if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE
+					|| (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+			} else
+				drawerLayout.closeDrawer(drawerList);
 			break;
 		case 2:
 			fragment = new AboutFragment();
@@ -175,7 +201,11 @@ public class HomeActivity extends ActionBarActivity {
 			// drawer
 			drawerList.setItemChecked(position, true);
 			setTitle(drawerTitles[position]);
-			drawerLayout.closeDrawer(drawerList);
+			if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE
+					|| (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+			} else
+				drawerLayout.closeDrawer(drawerList);
 			break;
 		default:
 			break;
