@@ -1,37 +1,28 @@
 package com.antares.slidedrawer.adapter;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.support.v4.util.LruCache;
+import android.text.Html;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.antares.slidedrawer.R;
 import com.antares.slidedrawer.data.DashboardPostsVO;
+import com.antares.slidedrawer.utils.UrlComposer;
+import com.antares.slidedrawer.utils.VolleySingleton;
 
 public class DashboardAdapter extends BaseAdapter {
 	private SparseArray<DashboardPostsVO> dashboardPosts;
 	private Activity context;
-	private LruCache<String, Bitmap> mMemoryCache;
 
 	public DashboardAdapter(SparseArray<DashboardPostsVO> dashboardPosts,
-			Activity context, LruCache<String, Bitmap> mMemoryCache) {
+			Activity context) {
 		super();
 		this.dashboardPosts = dashboardPosts;
 		this.context = context;
-		this.mMemoryCache = mMemoryCache;
 	}
 
 	@Override
@@ -57,58 +48,29 @@ public class DashboardAdapter extends BaseAdapter {
 		TextView tvBlogName = (TextView) convertView
 				.findViewById(R.id.tvBlogName);
 		TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-		WebView wvBody = (WebView) convertView.findViewById(R.id.wvBody);
+		final TextView tvBody = (TextView) convertView
+				.findViewById(R.id.tvBody);
+		// TextView tvBodyImage = (TextView)
+		// convertView.findViewById(R.id.tvBodyImage);
 		if (dashboardPosts.get(dashboardPosts.keyAt(position)).type
 				.equals("text")) {
 			tvBlogName.setText(dashboardPosts.get(dashboardPosts
 					.keyAt(position)).blog_name);
 			tvTitle.setText(dashboardPosts.get(dashboardPosts.keyAt(position)).title);
-			wvBody.loadData(
-					dashboardPosts.get(dashboardPosts.keyAt(position)).body,
-					"text/html; charset=UTF-8", null);
-			wvBody.setBackgroundColor(Color.TRANSPARENT);
+			final String body = dashboardPosts.get(dashboardPosts
+					.keyAt(position)).body;
+			tvBody.setText(Html.fromHtml(body));
 		}
 		if (dashboardPosts.get(dashboardPosts.keyAt(position)).title == null)
 			tvTitle.setVisibility(View.GONE);
 		else
 			tvTitle.setVisibility(View.VISIBLE);
-		Bitmap bitmap = getBitmapFromMemCache(dashboardPosts.get(dashboardPosts
-				.keyAt(position)).blog_name);
-		if (bitmap != null) {
-			Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-					bitmap.getHeight(), Config.ARGB_8888);
-			Canvas canvas = new Canvas(output);
-			BitmapShader shader;
-			shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP,
-					Shader.TileMode.CLAMP);
-
-			Paint paint = new Paint();
-			paint.setAntiAlias(true);
-			paint.setShader(shader);
-
-			RectF rect = new RectF(0.0f, 0.0f, bitmap.getWidth(),
-					bitmap.getHeight());
-
-			// rect contains the bounds of the shape
-			// radius is the radius in pixels of the rounded corners
-			// paint contains the shader that will texture the shape
-			canvas.drawRoundRect(rect, 10, 10, paint);
-			bitmap = output;
-		}
-		ImageView ivAvatar = (ImageView) convertView
+		NetworkImageView ivAvatar = (NetworkImageView) convertView
 				.findViewById(R.id.ivAvatar);
-		ivAvatar.setImageBitmap(bitmap);
+		ivAvatar.setImageUrl(UrlComposer.composeUrlBlogAvatar(
+				dashboardPosts.get(dashboardPosts.keyAt(position)).blog_name
+						+ ".tumblr.com", 64),
+				VolleySingleton.getInstance(context).getImageLoader());
 		return convertView;
 	}
-
-	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-		if (getBitmapFromMemCache(key) == null) {
-			mMemoryCache.put(key, bitmap);
-		}
-	}
-
-	public Bitmap getBitmapFromMemCache(String key) {
-		return mMemoryCache.get(key);
-	}
-
 }

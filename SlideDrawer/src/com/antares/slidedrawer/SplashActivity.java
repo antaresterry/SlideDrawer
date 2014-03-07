@@ -1,10 +1,6 @@
 package com.antares.slidedrawer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 
 import oauth.signpost.OAuthConsumer;
@@ -16,9 +12,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -30,8 +24,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,7 +41,6 @@ public class SplashActivity extends Activity {
 	private static final int REQUEST_TOKEN = 0;
 	private static final int REQUEST_ACCESS_TOKEN = 1;
 	private static final int REQUEST_USER_INFO = 2;
-	private static final int REQUEST_BLOG_AVATAR = 3;
 	private static final String TAG = "HomeFragment";
 	private static OAuthConsumer consumer = new CommonsHttpOAuthConsumer(
 			Constants.TUMBLR_CONSUMER_KEY, Constants.TUMBLR_CONSUMER_SECRET);
@@ -97,6 +88,12 @@ public class SplashActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onBackPressed() {
+		moveTaskToBack(true);
+		super.onBackPressed();
+	}
+
 	public void onClick(View vi) {
 		int viewId = vi.getId();
 		switch (viewId) {
@@ -130,27 +127,23 @@ public class SplashActivity extends Activity {
 		case REQUEST_USER_INFO:
 			Log.v("JSON", result);
 			try {
-				JSONObject json = new JSONObject(result);
-				JSONObject meta = json.getJSONObject("meta");
-				JSONObject response = json.getJSONObject("response");
-				JSONObject user = response.getJSONObject("user");
 				Gson gson = new Gson();
-				Constants.userInfo = gson.fromJson(user.toString(),
+				JSONObject json = new JSONObject(result);
+				Constants.userInfo = gson.fromJson(json.toString(),
 						UserInfoVO.class);
-				Toast.makeText(this, meta.getString("msg"), Toast.LENGTH_LONG)
-						.show();
-				Constants.userInfo.primary = 0;
-				for (int i = 0; i < Constants.userInfo.blogs.length; i++) {
-					if (Constants.userInfo.blogs[i].primary)
-						Constants.userInfo.primary = i;
+				Toast.makeText(this, Constants.userInfo.meta.msg,
+						Toast.LENGTH_LONG).show();
+				Constants.userInfo.response.user.primary = 0;
+				for (int i = 0; i < Constants.userInfo.response.user.blogs.length; i++) {
+					if (Constants.userInfo.response.user.blogs[i].primary)
+						Constants.userInfo.response.user.primary = i;
 				}
-				Constants.userInfo.base_hostname = StringUtils
-						.getBaseHostname(Constants.userInfo.blogs[Constants.userInfo.primary].url);
+				Constants.userInfo.response.user.base_hostname = StringUtils
+						.getBaseHostname(Constants.userInfo.response.user.blogs[Constants.userInfo.response.user.primary].url);
 
-				// Request Blog Avatar
-				new TumblrRequestLoader(this, REQUEST_BLOG_AVATAR)
-						.execute(UrlComposer.composeUrlBlogAvatar(
-								Constants.userInfo.base_hostname, 128));
+				Intent intent = new Intent(this, HomeActivity.class);
+				startActivity(intent);
+				finish();
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -282,9 +275,9 @@ public class SplashActivity extends Activity {
 	}
 
 	public class TumblrRequestLoader extends AsyncTask<String, Integer, String> {
+		@SuppressWarnings("unused")
 		private Activity context;
 		private int id;
-		private Bitmap bitmap;
 
 		public TumblrRequestLoader(Activity context, int id) {
 			super();
@@ -303,47 +296,17 @@ public class SplashActivity extends Activity {
 				// send the request
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpResponse response = httpClient.execute(request);
-				if (id == REQUEST_USER_INFO)
-					return EntityUtils.toString(response.getEntity());
-				else if (id == REQUEST_BLOG_AVATAR) {
-					final int statusCode = response.getStatusLine()
-							.getStatusCode();
-					if (statusCode != HttpStatus.SC_OK) {
-						Log.v(TAG, "Error " + statusCode
-								+ " while retrieving bitmap from " + params[0]);
-						return null;
-					}
-
-					final HttpEntity entity = response.getEntity();
-					if (entity != null) {
-						InputStream inputStream = null;
-						try {
-							inputStream = entity.getContent();
-							bitmap = BitmapFactory.decodeStream(inputStream);
-							return "Success";
-						} finally {
-							if (inputStream != null) {
-								inputStream.close();
-							}
-							entity.consumeContent();
-						}
-					}
-				}
+				return EntityUtils.toString(response.getEntity());
 
 			} catch (OAuthMessageSignerException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (OAuthExpectationFailedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (OAuthCommunicationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
@@ -352,30 +315,8 @@ public class SplashActivity extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			// Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();
-			if (result != null) {
-				if (id == REQUEST_BLOG_AVATAR) {
-
-					String downloadPath = context.getCacheDir()
-							.getAbsolutePath();
-					File file = new File(downloadPath, "Avatar.PNG");
-					try {
-						FileOutputStream outStream = new FileOutputStream(file);
-						bitmap.compress(Bitmap.CompressFormat.PNG, 100,
-								outStream);
-						outStream.flush();
-						outStream.close();
-
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					Intent intent = new Intent(context, HomeActivity.class);
-					startActivity(intent);
-					finish();
-				} else
-					onTaskSuccess(result, id);
-			}
+			if (result != null)
+				onTaskSuccess(result, id);
 			super.onPostExecute(result);
 		}
 

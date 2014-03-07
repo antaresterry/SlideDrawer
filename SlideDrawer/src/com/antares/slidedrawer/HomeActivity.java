@@ -1,20 +1,11 @@
 package com.antares.slidedrawer;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -26,15 +17,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.antares.slidedrawer.adapter.DrawerAdapter;
 import com.antares.slidedrawer.data.DrawerItem;
 import com.antares.slidedrawer.fragments.AboutFragment;
 import com.antares.slidedrawer.fragments.HomeFragment;
 import com.antares.slidedrawer.fragments.SettingsFragment;
+import com.antares.slidedrawer.utils.UrlComposer;
+import com.antares.slidedrawer.utils.VolleySingleton;
 
 public class HomeActivity extends ActionBarActivity {
 
@@ -62,40 +55,16 @@ public class HomeActivity extends ActionBarActivity {
 			drawerItems.add(i, new DrawerItem(drawerTitles[i], drawerIcons[i]));
 		}
 		View panelTop = getLayoutInflater().inflate(R.layout.panel_top, null);
-		String downloadPath = this.getCacheDir().getAbsolutePath();
-		File file = new File(downloadPath, "Avatar.PNG");
-		if (file.exists()) {
-			Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+		((NetworkImageView) panelTop.findViewById(R.id.ivAvatar)).setImageUrl(
+				UrlComposer.composeUrlBlogAvatar(
+						Constants.userInfo.response.user.base_hostname, 128),
+				VolleySingleton.getInstance(this).getImageLoader());
+		((TextView) panelTop.findViewById(R.id.tvBlogName))
+				.setText(Constants.userInfo.response.user.blogs[Constants.userInfo.response.user.primary].title);
+		((TextView) panelTop.findViewById(R.id.tvBlogDescription))
+				.setText("Followers: "
+						+ Constants.userInfo.response.user.blogs[Constants.userInfo.response.user.primary].followers);
 
-			if (bitmap != null) {
-				Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-						bitmap.getHeight(), Config.ARGB_8888);
-				Canvas canvas = new Canvas(output);
-				BitmapShader shader;
-				shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP,
-						Shader.TileMode.CLAMP);
-
-				Paint paint = new Paint();
-				paint.setAntiAlias(true);
-				paint.setShader(shader);
-
-				RectF rect = new RectF(0.0f, 0.0f, bitmap.getWidth(),
-						bitmap.getHeight());
-
-				// rect contains the bounds of the shape
-				// radius is the radius in pixels of the rounded corners
-				// paint contains the shader that will texture the shape
-				canvas.drawRoundRect(rect, 10, 10, paint);
-				bitmap = output;
-			}
-			((ImageView) panelTop.findViewById(R.id.ivAvatar))
-					.setImageBitmap(bitmap);
-			((TextView) panelTop.findViewById(R.id.tvBlogName))
-					.setText(Constants.userInfo.blogs[Constants.userInfo.primary].title);
-			((TextView) panelTop.findViewById(R.id.tvBlogDescription))
-					.setText("Followers: "
-							+ Constants.userInfo.blogs[Constants.userInfo.primary].followers);
-		}
 		drawerList.addHeaderView(panelTop, null, false);
 		// Set the adapter for the list view
 		drawerAdapter = new DrawerAdapter(drawerItems, this);

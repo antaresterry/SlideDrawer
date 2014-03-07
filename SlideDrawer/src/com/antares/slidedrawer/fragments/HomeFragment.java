@@ -20,11 +20,9 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -33,10 +31,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
 import com.antares.slidedrawer.Constants;
 import com.antares.slidedrawer.R;
 import com.antares.slidedrawer.adapter.DashboardAdapter;
@@ -52,7 +46,6 @@ public class HomeFragment extends Fragment {
 	private SparseArray<DashboardPostsVO> dashboardPosts;
 	private ListView lvDashboard;
 	private DashboardAdapter dashboardAdapter;
-	private static LruCache<String, Bitmap> mMemoryCache;
 
 	public HomeFragment() {
 		// Empty constructor required for fragment subclasses
@@ -62,16 +55,6 @@ public class HomeFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.home, container, false);
-
-		// Get max available VM memory, exceeding this amount will throw an
-		// OutOfMemory exception. Stored in kilobytes as LruCache takes an
-		// int in its constructor.
-		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-
-		// Use 1/8th of the available memory for this memory cache.
-		final int cacheSize = maxMemory / 8;
-
-		mMemoryCache = new LruCache<String, Bitmap>(cacheSize);
 
 		dashboardPosts = new SparseArray<DashboardPostsVO>();
 		lvDashboard = (ListView) rootView.findViewById(R.id.lvDashboard);
@@ -86,16 +69,6 @@ public class HomeFragment extends Fragment {
 		return rootView;
 	}
 
-	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-		if (getBitmapFromMemCache(key) == null) {
-			mMemoryCache.put(key, bitmap);
-		}
-	}
-
-	public Bitmap getBitmapFromMemCache(String key) {
-		return mMemoryCache.get(key);
-	}
-
 	public void onTaskSuccess(String result, int id) {
 		switch (id) {
 		case REQUEST_DASHBOARD:
@@ -107,32 +80,15 @@ public class HomeFragment extends Fragment {
 						Toast.LENGTH_SHORT).show();
 				JSONObject response = json.getJSONObject("response");
 				JSONArray posts = response.getJSONArray("posts");
-				RequestQueue rq = Volley.newRequestQueue(getActivity());
 				for (int i = 0; i < posts.length(); i++) {
 					JSONObject post = posts.getJSONObject(i);
 					Gson gson = new Gson();
 					DashboardPostsVO dashboardPost = gson.fromJson(
 							post.toString(), DashboardPostsVO.class);
-					final String blogName = dashboardPost.blog_name;
 					dashboardPosts.put(dashboardPost.id, dashboardPost);
-					ImageRequest ir = new ImageRequest(
-							UrlComposer
-									.composeUrlBlogAvatar(
-											dashboardPost.blog_name
-													+ ".tumblr.com", 64),
-							new Response.Listener<Bitmap>() {
-
-								@Override
-								public void onResponse(Bitmap response) {
-									addBitmapToMemoryCache(blogName, response);
-									dashboardAdapter.notifyDataSetChanged();
-								}
-							}, 0, 0, null, null);
-					rq.add(ir);
 				}
-				rq.start();
 				dashboardAdapter = new DashboardAdapter(dashboardPosts,
-						getActivity(), mMemoryCache);
+						getActivity());
 				lvDashboard.setAdapter(dashboardAdapter);
 				getActivity().findViewById(R.id.pbHome)
 						.setVisibility(View.GONE);
