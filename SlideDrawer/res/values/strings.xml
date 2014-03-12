@@ -15,6 +15,8 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <string name="button.tumblr">Connect with Tumblr</string>
     <string name="button.logout.tumblr">Logout from Tumblr</string>
+    <string name="button.reblog">Reblog</string>
+    <string name="button.like">Like</string>
 
     <string-array name="menu_drawer">
         <item>Home</item>

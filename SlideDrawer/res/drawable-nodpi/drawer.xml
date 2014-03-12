@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@android:color/darker_gray" android:state_activated="false" android:state_pressed="false" android:state_selected="false"/>
-    <item android:drawable="@color/bg_gradient_top"/>
+    <item android:drawable="@color/bg_drawer_item_unselect" android:state_activated="false" android:state_pressed="false" android:state_selected="false"/>
+    <item android:drawable="@color/bg_drawer_item_select"/>
 
 </selector>

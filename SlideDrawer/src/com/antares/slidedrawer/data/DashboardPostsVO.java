@@ -2,7 +2,7 @@ package com.antares.slidedrawer.data;
 
 public class DashboardPostsVO {
 	public String blog_name;
-	public Integer id;
+	public String id;
 	public String post_url;
 	public String type;
 	public Integer timestamp;
