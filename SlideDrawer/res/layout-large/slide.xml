@@ -1,23 +1,70 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:baselineAligned="false"
-    android:orientation="horizontal" >
+    android:id="@+id/sidebar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <fragment
-        android:id="@+id/menu_fragment"
-        android:name="com.antares.slidedrawer.fragments.MenuDrawerFragment"
-        android:layout_width="0dp"
+    <!-- The main content view -->
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <fragment
+            android:id="@+id/menu_fragment"
+            android:name="com.antares.slidedrawer.fragments.MenuDrawerFragment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:layout="@layout/drawer" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/divider" />
+
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="@android:color/white" />
+    </LinearLayout>
+
+    <!-- The sidebar -->
+
+    <LinearLayout
+        android:id="@+id/right_drawer"
+        android:layout_width="400dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:layout="@layout/drawer" />
+        android:layout_gravity="end"
+        android:background="@color/bg_drawer" >
 
-    <FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:background="@color/bg_gradient_top" />
+        <ListView
+            android:id="@+id/lvNotification"
+            android:layout_width="400dp"
+            android:layout_height="match_parent"
+            android:choiceMode="singleChoice"
+            android:divider="@color/divider"
+            android:dividerHeight="1dp" />
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/emptyNotification"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_notification"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:textColor="@android:color/darker_gray"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v4.widget.DrawerLayout>

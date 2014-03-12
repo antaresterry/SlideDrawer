@@ -1,9 +1,16 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:slidedrawer="http://schemas.android.com/apk/res-auto" >
 
+    <item
+        android:id="@+id/action_notification"
+        android:icon="@drawable/make_available_offline"
+        android:title="@string/action_notification"
+        slidedrawer:showAsAction="never"/>
     <item
         android:id="@+id/action_exit"
         android:icon="@drawable/navigation_cancel"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/action_exit"/>
+        android:title="@string/action_exit"
+        slidedrawer:showAsAction="never">
+    </item>
 
 </menu>

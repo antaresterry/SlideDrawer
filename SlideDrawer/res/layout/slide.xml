@@ -3,23 +3,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!-- The main content view -->
+    <!-- The main content view and sidebar -->
 
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/sidebar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_gradient_top" />
+        android:layout_height="match_parent" >
+
+        <!-- The main content view -->
+
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
+        <!-- The sidebar -->
+
+        <LinearLayout
+            android:id="@+id/right_drawer"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@color/bg_drawer"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/lvNotification"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:choiceMode="singleChoice"
+                android:divider="@color/divider"
+                android:dividerHeight="1dp" />
+
+            <LinearLayout
+                android:id="@+id/emptyNotification"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/empty_notification"
+                    android:textAppearance="@android:style/TextAppearance.Large"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+
     <!-- The navigation drawer -->
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/darker_gray"
+        android:background="@color/bg_drawer"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/white"
-        android:dividerHeight="1dp" />
+        android:divider="@color/divider"
+        android:dividerHeight="1dp"
+        android:groupIndicator="@null" />
 
 </android.support.v4.widget.DrawerLayout>

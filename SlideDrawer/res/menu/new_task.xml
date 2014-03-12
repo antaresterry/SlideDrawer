@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:slidedrawer="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_done"
+        android:icon="@drawable/navigation_accept"
+        android:title="@string/action_done"
+        slidedrawer:showAsAction="always|withText"/>
+
+</menu>

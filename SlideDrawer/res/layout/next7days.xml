@@ -1,0 +1,107 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/lvToday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <ListView
+        android:id="@+id/lvTomorrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <ListView
+        android:id="@+id/lv3rdDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <ListView
+        android:id="@+id/lv4thDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <ListView
+        android:id="@+id/lv5thDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <ListView
+        android:id="@+id/lv6thDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <ListView
+        android:id="@+id/lv7thDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/divider" />
+
+    <LinearLayout
+        android:id="@+id/emptyNext7Days"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_next7days"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

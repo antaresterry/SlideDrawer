@@ -12,12 +12,54 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="drawer_title">Menu</string>
     <string name="action_exit">Close Application</string>
+    <string name="action_notification">Notification</string>
+    <string name="action_done">Done</string>
+    <string name="action_new">New Task</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
+    <string name="hint.task">Task</string>
+    <string name="hint.duedate">No due date</string>
+    <string name="button.ok">OK</string>
+    <string name="empty_inbox">NO TASKS FOR INBOX</string>
+    <string name="empty_today">NO TASKS FOR TODAY</string>
+    <string name="empty_next7days">NO TASKS FOR THE WEEK</string>
+    <string name="empty_notification">NO NOTIFICATIONS</string>
 
     <string-array name="menu_drawer">
-        <item>Home</item>
-        <item>Settings</item>
-        <item>About</item>
+        <item>Inbox</item>
+        <item>Today</item>
+        <item>Next 7 Days</item>
+        <item>Projects</item>
+        <item>Labels</item>
+        <item>Filters</item>
     </string-array>
+    <string-array name="child_drawer">
+        <item>Assigned to me</item>
+        <item>Assigned to others</item>
+        <item>Priority 1</item>
+        <item>Priority 2</item>
+        <item>Priority 3</item>
+        <item>Priority 4</item>
+        <item>View all</item>
+        <item>No due date</item>
+    </string-array>
+    <string-array name="category">
+        <item>Inbox</item>
+    </string-array>
+    <string-array name="priority">
+        <item>Priority 1</item>
+        <item>Priority 2</item>
+        <item>Priority 3</item>
+        <item>Priority 4</item>
+    </string-array>
+    <string-array name="subtask">
+        <item>No level</item>
+        <item>\tLevel 1</item>
+        <item>\t\tLevel 2</item>
+        <item>\t\t\tLevel 3</item>
+        <item>\t\t\t\tLevel 4</item>
+    </string-array>
+
+    <string name="title_activity_new_task">Add Task</string>
+    <string name="more">more</string>
 
 </resources>

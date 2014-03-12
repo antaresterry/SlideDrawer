@@ -3,7 +3,11 @@
 
     <color name="bg_gradient_top">#b9c3ff</color>
     <color name="bg_gradient_bottom">#432aff</color>
-    <color name="bg_action_bar">#604fff</color>
+    <color name="bg_action_bar">#fbfbfb</color>
     <color name="text_action_bar">#f2f2f2</color>
+    <color name="bg_drawer">#e9e9e9</color>
+    <color name="bg_drawer_item">#f3f3f3</color>
+    <color name="divider">#dfdfdf</color>
+    <color name="text_drawer_select">#e5776a</color>
 
 </resources>

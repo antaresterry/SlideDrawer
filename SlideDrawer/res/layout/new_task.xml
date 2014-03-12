@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="20dp" >
+
+    <EditText
+        android:id="@+id/etTask"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/hint.task" />
+
+    <Spinner
+        android:id="@+id/sCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/category" />
+
+    <EditText
+        android:id="@+id/etDueDate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/hint.duedate"
+        android:inputType="date" />
+
+    <LinearLayout
+        android:id="@+id/more"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:onClick="onClick"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/more"
+            android:textColor="@android:color/darker_gray" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:contentDescription="@string/hint.image"
+            android:src="@drawable/navigation_expand" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/sLabels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/category"
+        android:visibility="gone" />
+
+    <Spinner
+        android:id="@+id/sPriority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/priority"
+        android:visibility="gone" />
+
+    <Spinner
+        android:id="@+id/sSubtask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/subtask"
+        android:visibility="gone" />
+
+</LinearLayout>

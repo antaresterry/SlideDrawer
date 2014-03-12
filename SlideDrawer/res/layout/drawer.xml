@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/left_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/darker_gray"
+        android:background="@color/bg_drawer"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/white"
-        android:dividerHeight="1dp" />
+        android:divider="@color/divider"
+        android:dividerHeight="2dp"
+        android:groupIndicator="@null" />
 
 </LinearLayout>

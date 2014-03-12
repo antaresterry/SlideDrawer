@@ -26,6 +26,16 @@
             android:name="com.antares.slidedrawer.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
+        <activity
+            android:name="com.antares.slidedrawer.NewTaskActivity"
+            android:label="@string/title_activity_new_task"
+            android:parentActivityName="com.antares.slidedrawer.HomeActivity" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.antares.slidedrawer.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
