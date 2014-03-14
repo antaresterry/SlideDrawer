@@ -1,15 +1,14 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+<uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ptr_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
     <ProgressBar
         android:id="@+id/pbHome"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:visibility="visible" />
 
     <ListView
@@ -18,9 +17,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:stackFromBottom="false"
+        android:divider="@color/tumblr_bg"
         android:dividerHeight="10dp"
         android:paddingTop="10dp"
+        android:stackFromBottom="false"
         android:visibility="gone" />
 
-</LinearLayout>
+</uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout>

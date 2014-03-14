@@ -27,8 +27,7 @@ public class UrlComposer {
 	}
 
 	// Blog Avatar With Size
-	public static String composeUrlBlogAvatar(String baseHostname,
-			int size) {
+	public static String composeUrlBlogAvatar(String baseHostname, int size) {
 		String composeResult = "";
 
 		composeResult = Constants.URL_REQUEST + Constants.REQUEST_BLOG + "/"
@@ -186,6 +185,60 @@ public class UrlComposer {
 		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
 				+ Constants.REQUEST_USER_DASHBOARD + "?"
 				+ Constants.REQUEST_PARAM_TYPE + "=" + type;
+
+		return composeResult;
+	}
+
+	// User Dashboard With Notes
+	public static String composeUrlUserDashboard(Boolean notes_info) {
+		String composeResult = "";
+
+		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+				+ Constants.REQUEST_USER_DASHBOARD + "?"
+				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+				+ notes_info.toString();
+
+		return composeResult;
+	}
+
+	// User Dashboard With Type and Notes
+	public static String composeUrlUserDashboard(String type, Boolean notes_info) {
+		String composeResult = "";
+
+		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+				+ Constants.REQUEST_USER_DASHBOARD + "?"
+				+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
+				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+				+ notes_info.toString();
+
+		return composeResult;
+	}
+
+	// User Dashboard With Type, Notes and Offset
+	public static String composeUrlUserDashboard(String type,
+			Boolean notes_info, String offset) {
+		String composeResult = "";
+
+		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+				+ Constants.REQUEST_USER_DASHBOARD + "?"
+				+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
+				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+				+ notes_info.toString() + "&" + Constants.REQUEST_PARAM_OFFSET
+				+ "=" + offset;
+
+		return composeResult;
+	}
+
+	// User Dashboard With Notes and Offset
+	public static String composeUrlUserDashboard(Boolean notes_info,
+			String offset) {
+		String composeResult = "";
+
+		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+				+ Constants.REQUEST_USER_DASHBOARD + "?"
+				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+				+ notes_info.toString() + "&" + Constants.REQUEST_PARAM_OFFSET
+				+ "=" + offset;
 
 		return composeResult;
 	}

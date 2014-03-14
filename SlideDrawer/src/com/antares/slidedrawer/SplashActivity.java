@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -37,7 +38,7 @@ import com.antares.slidedrawer.utils.StringUtils;
 import com.antares.slidedrawer.utils.UrlComposer;
 import com.google.gson.Gson;
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends ActionBarActivity {
 	private static final int REQUEST_TOKEN = 0;
 	private static final int REQUEST_ACCESS_TOKEN = 1;
 	private static final int REQUEST_USER_INFO = 2;

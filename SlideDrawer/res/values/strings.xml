@@ -24,4 +24,6 @@
         <item>About</item>
     </string-array>
 
+    <string name="loading_text">Loading..</string>
+
 </resources>

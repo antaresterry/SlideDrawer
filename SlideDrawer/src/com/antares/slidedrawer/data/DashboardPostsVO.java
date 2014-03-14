@@ -19,4 +19,14 @@ public class DashboardPostsVO {
 	public Integer total_posts;
 	public String title;
 	public String body;
+	public Long note_count;
+	public String text;
+	public String source;
+	public String url;
+	public String description;
+	public String caption;
+	public String asking_name;
+	public String asking_url;
+	public String question;
+	public String answer;
 }

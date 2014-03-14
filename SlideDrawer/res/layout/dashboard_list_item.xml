@@ -59,17 +59,29 @@
         android:textColor="@android:color/black"
         android:textSize="12sp" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvTags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|right"
-        android:orientation="horizontal" >
+        android:textColor="@android:color/black"
+        android:textSize="12sp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/tvNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tvLike"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/tvReblog"
             android:text="@string/button.like"
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp" />
@@ -78,9 +90,10 @@
             android:id="@+id/tvReblog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:text="@string/button.reblog"
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp" />
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
