@@ -4,7 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -14,16 +16,18 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.method.LinkMovementMethod;
-import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.NetworkImageView;
+import com.antares.slidedrawer.Constants;
 import com.antares.slidedrawer.R;
 import com.antares.slidedrawer.data.DashboardPostsVO;
 import com.antares.slidedrawer.utils.MemoryCacheSingleton;
@@ -31,11 +35,11 @@ import com.antares.slidedrawer.utils.UrlComposer;
 import com.antares.slidedrawer.utils.VolleySingleton;
 
 public class DashboardAdapter extends BaseAdapter {
-	private SparseArray<DashboardPostsVO> dashboardPosts;
+	private List<DashboardPostsVO> dashboardPosts;
 	private Activity context;
 	private Fragment fragment;
 
-	public DashboardAdapter(SparseArray<DashboardPostsVO> dashboardPosts,
+	public DashboardAdapter(List<DashboardPostsVO> dashboardPosts,
 			Activity context, Fragment fragment) {
 		super();
 		this.dashboardPosts = dashboardPosts;
@@ -50,7 +54,7 @@ public class DashboardAdapter extends BaseAdapter {
 
 	@Override
 	public DashboardPostsVO getItem(int position) {
-		return dashboardPosts.get(dashboardPosts.keyAt(position));
+		return dashboardPosts.get(position);
 	}
 
 	@Override
@@ -68,64 +72,38 @@ public class DashboardAdapter extends BaseAdapter {
 
 	@SuppressLint("SimpleDateFormat")
 	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null)
 			convertView = context.getLayoutInflater().inflate(
 					R.layout.dashboard_list_item, null);
+
 		TextView tvBlogName = (TextView) convertView
 				.findViewById(R.id.tvBlogName);
 		TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-		TextView tvLike = (TextView) convertView.findViewById(R.id.tvLike);
-		TextView tvReblog = (TextView) convertView.findViewById(R.id.tvReblog);
+		ImageView ivLike = (ImageView) convertView.findViewById(R.id.ivLike);
+		ImageView ivEdit = (ImageView) convertView.findViewById(R.id.ivEdit);
+		ImageView ivReblog = (ImageView) convertView
+				.findViewById(R.id.ivReblog);
 		TextView tvDate = (TextView) convertView.findViewById(R.id.tvDate);
 		TextView tvNotes = (TextView) convertView.findViewById(R.id.tvNotes);
 		TextView tvTags = (TextView) convertView.findViewById(R.id.tvTags);
-		final TextView tvBody = (TextView) convertView
-				.findViewById(R.id.tvBody);
+		TextView tvBody = (TextView) convertView.findViewById(R.id.tvBody);
 		// TextView tvBodyImage = (TextView)
 		// convertView.findViewById(R.id.tvBodyImage);
 		tvBlogName.setText(getItem(position).blog_name);
+		if (getItem(position).reblogged_from_name != null)
+			tvBlogName.setText(tvBlogName.getText() + "\nreblogged from "
+					+ getItem(position).reblogged_from_name);
 		if (getItem(position).type.equals("text")) {
 			if (getItem(position).title == null)
 				tvTitle.setVisibility(View.GONE);
 			else
 				tvTitle.setVisibility(View.VISIBLE);
 			tvTitle.setText(getItem(position).title);
-			final String body = getItem(position).body;
+			String body = getItem(position).body;
 			tvBody.setMovementMethod(LinkMovementMethod.getInstance());
-			tvBody.setText(Html.fromHtml(body, new ImageGetter() {
-
-				@Override
-				public Drawable getDrawable(final String source) {
-					ImageRequest ir = new ImageRequest(source,
-							new Response.Listener<Bitmap>() {
-
-								@Override
-								public void onResponse(Bitmap response) {
-									addBitmapToMemoryCache(source, response);
-									tvBody.setText(Html.fromHtml(
-											getItem(position).body,
-											new ImageGetter() {
-
-												@Override
-												public Drawable getDrawable(
-														String source) {
-													return getBitmapFromCache(source);
-												}
-											}, null));
-
-								}
-							}, 0, 0, null, null);
-					if (getBitmapFromMemCache(source) == null) {
-						VolleySingleton.getInstance(context).getRequestQueue()
-								.add(ir);
-						VolleySingleton.getInstance(context).getRequestQueue()
-								.start();
-					}
-					return getBitmapFromCache(source);
-				}
-
-			}, null));
+			tvBody.setText(Html
+					.fromHtml(body, new ImageGet(tvBody, body), null));
 		} else if (getItem(position).type.equals("quote")) {
 			tvTitle.setText(Html.fromHtml("\"" + getItem(position).text + "\""));
 			tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20F);
@@ -137,42 +115,12 @@ public class DashboardAdapter extends BaseAdapter {
 			else
 				tvTitle.setVisibility(View.VISIBLE);
 			tvTitle.setText(getItem(position).title);
+			String description = getItem(position).description;
 			tvBody.setMovementMethod(LinkMovementMethod.getInstance());
 			tvBody.setText(Html.fromHtml("<a href=" + getItem(position).url
 					+ ">" + getItem(position).url + "</a>" + "\n"
-					+ getItem(position).description, new ImageGetter() {
-
-				@Override
-				public Drawable getDrawable(final String source) {
-					ImageRequest ir = new ImageRequest(source,
-							new Response.Listener<Bitmap>() {
-
-								@Override
-								public void onResponse(Bitmap response) {
-									addBitmapToMemoryCache(source, response);
-									tvBody.setText(Html.fromHtml(
-											getItem(position).description,
-											new ImageGetter() {
-
-												@Override
-												public Drawable getDrawable(
-														String source) {
-													return getBitmapFromCache(source);
-												}
-											}, null));
-
-								}
-							}, 0, 0, null, null);
-					if (getBitmapFromMemCache(source) == null) {
-						VolleySingleton.getInstance(context).getRequestQueue()
-								.add(ir);
-						VolleySingleton.getInstance(context).getRequestQueue()
-								.start();
-					}
-					return getBitmapFromCache(source);
-				}
-
-			}, null));
+					+ getItem(position).description, new ImageGet(tvBody,
+					description), null));
 		} else if (getItem(position).type.equals("chat")) {
 			if (getItem(position).title == null)
 				tvTitle.setVisibility(View.GONE);
@@ -187,83 +135,22 @@ public class DashboardAdapter extends BaseAdapter {
 			else
 				tvBody.setVisibility(View.VISIBLE);
 			tvTitle.setVisibility(View.VISIBLE);
-			tvBody.setText(Html.fromHtml(getItem(position).caption,
-					new ImageGetter() {
-
-						@Override
-						public Drawable getDrawable(final String source) {
-							ImageRequest ir = new ImageRequest(source,
-									new Response.Listener<Bitmap>() {
-
-										@Override
-										public void onResponse(Bitmap response) {
-											addBitmapToMemoryCache(source,
-													response);
-											tvBody.setText(Html.fromHtml(
-													getItem(position).caption,
-													new ImageGetter() {
-
-														@Override
-														public Drawable getDrawable(
-																String source) {
-															return getBitmapFromCache(source);
-														}
-													}, null));
-
-										}
-									}, 0, 0, null, null);
-							if (getBitmapFromMemCache(source) == null) {
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().add(ir);
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().start();
-							}
-							return getBitmapFromCache(source);
-						}
-
-					}, null));
+			String caption = getItem(position).caption;
+			tvBody.setMovementMethod(LinkMovementMethod.getInstance());
+			tvBody.setText(Html.fromHtml(caption,
+					new ImageGet(tvBody, caption), null));
 		} else if (getItem(position).type.equals("audio")) {
-			tvTitle.setText("[Audio]");
-			tvTitle.setVisibility(View.VISIBLE);
+			tvTitle.setMovementMethod(LinkMovementMethod.getInstance());
+			tvTitle.setText(Html.fromHtml("<a href="
+					+ getItem(position).short_url + ">[Audio]</a>"));
 			if (getItem(position).caption == null)
 				tvBody.setVisibility(View.GONE);
 			else
 				tvBody.setVisibility(View.VISIBLE);
-			tvBody.setText(Html.fromHtml(getItem(position).caption,
-					new ImageGetter() {
-
-						@Override
-						public Drawable getDrawable(final String source) {
-							ImageRequest ir = new ImageRequest(source,
-									new Response.Listener<Bitmap>() {
-
-										@Override
-										public void onResponse(Bitmap response) {
-											addBitmapToMemoryCache(source,
-													response);
-											tvBody.setText(Html.fromHtml(
-													getItem(position).caption,
-													new ImageGetter() {
-
-														@Override
-														public Drawable getDrawable(
-																String source) {
-															return getBitmapFromCache(source);
-														}
-													}, null));
-
-										}
-									}, 0, 0, null, null);
-							if (getBitmapFromMemCache(source) == null) {
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().add(ir);
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().start();
-							}
-							return getBitmapFromCache(source);
-						}
-
-					}, null));
+			String caption = getItem(position).caption;
+			tvBody.setMovementMethod(LinkMovementMethod.getInstance());
+			tvBody.setText(Html.fromHtml(caption,
+					new ImageGet(tvBody, caption), null));
 		} else if (getItem(position).type.equals("video")) {
 			tvTitle.setText("[Video]");
 			tvTitle.setVisibility(View.VISIBLE);
@@ -271,82 +158,20 @@ public class DashboardAdapter extends BaseAdapter {
 				tvBody.setVisibility(View.GONE);
 			else
 				tvBody.setVisibility(View.VISIBLE);
-			tvBody.setText(Html.fromHtml(getItem(position).caption,
-					new ImageGetter() {
-
-						@Override
-						public Drawable getDrawable(final String source) {
-							ImageRequest ir = new ImageRequest(source,
-									new Response.Listener<Bitmap>() {
-
-										@Override
-										public void onResponse(Bitmap response) {
-											addBitmapToMemoryCache(source,
-													response);
-											tvBody.setText(Html.fromHtml(
-													getItem(position).caption,
-													new ImageGetter() {
-
-														@Override
-														public Drawable getDrawable(
-																String source) {
-															return getBitmapFromCache(source);
-														}
-													}, null));
-
-										}
-									}, 0, 0, null, null);
-							if (getBitmapFromMemCache(source) == null) {
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().add(ir);
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().start();
-							}
-							return getBitmapFromCache(source);
-						}
-
-					}, null));
+			String caption = getItem(position).caption;
+			tvBody.setMovementMethod(LinkMovementMethod.getInstance());
+			tvBody.setText(Html.fromHtml(caption,
+					new ImageGet(tvBody, caption), null));
 		} else if (getItem(position).type.equals("answer")) {
 			tvTitle.setText(Html.fromHtml("<a href="
 					+ getItem(position).asking_url + ">"
 					+ getItem(position).asking_name + "</a> asked:\n"
 					+ getItem(position).question));
 			tvTitle.setVisibility(View.VISIBLE);
-			tvBody.setText(Html.fromHtml(getItem(position).answer,
-					new ImageGetter() {
-
-						@Override
-						public Drawable getDrawable(final String source) {
-							ImageRequest ir = new ImageRequest(source,
-									new Response.Listener<Bitmap>() {
-
-										@Override
-										public void onResponse(Bitmap response) {
-											addBitmapToMemoryCache(source,
-													response);
-											tvBody.setText(Html.fromHtml(
-													getItem(position).answer,
-													new ImageGetter() {
-
-														@Override
-														public Drawable getDrawable(
-																String source) {
-															return getBitmapFromCache(source);
-														}
-													}, null));
-
-										}
-									}, 0, 0, null, null);
-							if (getBitmapFromMemCache(source) == null) {
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().add(ir);
-								VolleySingleton.getInstance(context)
-										.getRequestQueue().start();
-							}
-							return getBitmapFromCache(source);
-						}
-
-					}, null));
+			String answer = getItem(position).answer;
+			tvBody.setMovementMethod(LinkMovementMethod.getInstance());
+			tvBody.setText(Html.fromHtml(answer, new ImageGet(tvBody, answer),
+					null));
 		}
 		tvTags.setText("");
 		if (getItem(position).tags.length > 0) {
@@ -376,15 +201,24 @@ public class DashboardAdapter extends BaseAdapter {
 				UrlComposer.composeUrlBlogAvatar(getItem(position).blog_name
 						+ ".tumblr.com", 64),
 				VolleySingleton.getInstance(context).getImageLoader());
-		tvLike.setOnClickListener((OnClickListener) fragment);
-		tvReblog.setOnClickListener((OnClickListener) fragment);
+		ivLike.setOnClickListener((OnClickListener) fragment);
+		ivReblog.setOnClickListener((OnClickListener) fragment);
+		ivEdit.setOnClickListener((OnClickListener) fragment);
 		tvNotes.setText(getItem(position).note_count + " Notes");
-		if (getItem(position).liked) {
-			tvLike.setText("Liked");
-			tvLike.setClickable(false);
+		if (getItem(position).blog_name
+				.equals(Constants.userInfo.response.user.blogs[Constants.userInfo.response.user.primary].name)) {
+			ivLike.setVisibility(View.GONE);
+			ivEdit.setVisibility(View.VISIBLE);
 		} else {
-			tvLike.setText("Like");
-			tvLike.setClickable(true);
+			ivLike.setVisibility(View.VISIBLE);
+			ivEdit.setVisibility(View.GONE);
+		}
+		if (getItem(position).liked) {
+			ivLike.setImageResource(R.drawable.dashboard_post_control_like_selected);
+			ivLike.setClickable(false);
+		} else {
+			ivLike.setImageResource(R.drawable.dashboard_post_control_like);
+			ivLike.setClickable(true);
 		}
 
 		return convertView;
@@ -410,5 +244,55 @@ public class DashboardAdapter extends BaseAdapter {
 
 	public Bitmap getBitmapFromMemCache(String key) {
 		return MemoryCacheSingleton.getInstance().get(key);
+	}
+
+	public class BitmapListener implements Response.Listener<Bitmap> {
+		private String source;
+		private TextView tvBody;
+		private String body;
+
+		public BitmapListener(String source, TextView tvBody, String body) {
+			super();
+			this.source = source;
+			this.tvBody = tvBody;
+			this.body = body;
+		}
+
+		@Override
+		public void onResponse(Bitmap response) {
+			addBitmapToMemoryCache(source, response);
+			tvBody.setText(Html.fromHtml(body, new ImageGetter() {
+
+				@Override
+				public Drawable getDrawable(String source) {
+					return getBitmapFromCache(source);
+				}
+			}, null));
+
+		}
+
+	}
+
+	public class ImageGet implements ImageGetter {
+		private TextView tvBody;
+		private String body;
+
+		public ImageGet(TextView tvBody, String body) {
+			super();
+			this.tvBody = tvBody;
+			this.body = body;
+		}
+
+		@Override
+		public Drawable getDrawable(String source) {
+			ImageRequest ir = new ImageRequest(source, new BitmapListener(
+					source, tvBody, body), 0, 0, null, null);
+			if (getBitmapFromMemCache(source) == null) {
+				VolleySingleton.getInstance(context).getRequestQueue().add(ir);
+				VolleySingleton.getInstance(context).getRequestQueue().start();
+			}
+			return getBitmapFromCache(source);
+		}
+
 	}
 }

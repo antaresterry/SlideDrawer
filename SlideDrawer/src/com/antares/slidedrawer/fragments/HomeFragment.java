@@ -3,7 +3,9 @@ package com.antares.slidedrawer.fragments;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -33,14 +35,17 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.OnNavigationListener;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -52,7 +57,7 @@ import com.antares.slidedrawer.utils.UrlComposer;
 import com.google.gson.Gson;
 
 public class HomeFragment extends Fragment implements OnClickListener,
-		OnRefreshListener, OnScrollListener {
+		OnRefreshListener, OnScrollListener, OnNavigationListener {
 
 	private static final int REQUEST_DASHBOARD = 0;
 	private static final int POST_LIKE = 1;
@@ -60,7 +65,8 @@ public class HomeFragment extends Fragment implements OnClickListener,
 	private static final int REQUEST_DASHBOARD_LOAD_MORE = 3;
 	private static OAuthConsumer consumer = new CommonsHttpOAuthConsumer(
 			Constants.TUMBLR_CONSUMER_KEY, Constants.TUMBLR_CONSUMER_SECRET);
-	private static SparseArray<DashboardPostsVO> dashboardPosts;
+	private static Set<DashboardPostsVO> dashboardPosts;
+	private static List<DashboardPostsVO> dashboardPostss;
 	private static ListView lvDashboard;
 	private static DashboardAdapter dashboardAdapter;
 	private static String lastId = "";
@@ -68,6 +74,7 @@ public class HomeFragment extends Fragment implements OnClickListener,
 	private View panelFooter;
 	private int threshold = 0;
 	private static boolean isLoading = false;
+	private String type = null;
 
 	public HomeFragment() {
 		// Empty constructor required for fragment subclasses
@@ -77,7 +84,7 @@ public class HomeFragment extends Fragment implements OnClickListener,
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.home, container, false);
-
+		isLoading = false;
 		// Now find the PullToRefreshLayout to setup
 		mPullToRefreshLayout = (PullToRefreshLayout) rootView
 				.findViewById(R.id.ptr_layout);
@@ -89,9 +96,34 @@ public class HomeFragment extends Fragment implements OnClickListener,
 				.listener(this)
 				// Finally commit the setup to our PullToRefreshLayout
 				.setup(mPullToRefreshLayout);
-		dashboardPosts = new SparseArray<DashboardPostsVO>();
+		// ((ActionBarActivity)
+		// getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+		((ActionBarActivity) getActivity()).getSupportActionBar()
+				.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+		final String[] dropdownValues = getResources().getStringArray(
+				R.array.type);
+
+		// Specify a SpinnerAdapter to populate the dropdown list.
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+				((ActionBarActivity) getActivity()).getSupportActionBar()
+						.getThemedContext(),
+				android.R.layout.simple_spinner_item, android.R.id.text1,
+				dropdownValues);
+
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		// Set up the dropdown list navigation in the action bar.
+		((ActionBarActivity) getActivity()).getSupportActionBar()
+				.setListNavigationCallbacks(adapter, this);
+
+		// use getActionBar().getThemedContext() to ensure
+		// that the text color is always appropriate for the action bar
+		// background rather than the activity background.
+		dashboardPosts = new HashSet<DashboardPostsVO>();
+		dashboardPostss = new ArrayList<DashboardPostsVO>();
 		lvDashboard = (ListView) rootView.findViewById(R.id.lvDashboard);
-		dashboardAdapter = new DashboardAdapter(dashboardPosts, getActivity(),
+		dashboardAdapter = new DashboardAdapter(dashboardPostss, getActivity(),
 				this);
 		lvDashboard.setAdapter(dashboardAdapter);
 		panelFooter = inflater.inflate(R.layout.panel_footer, null);
@@ -104,7 +136,10 @@ public class HomeFragment extends Fragment implements OnClickListener,
 				oAuth.getString(Constants.PREF_PARAM_TOKEN_SECRET, null));
 		// Request User Dashboard
 		new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
-				.execute(UrlComposer.composeUrlUserDashboard((Boolean) true));
+				.execute(UrlComposer.composeUrlUserDashboard(type,
+						(Boolean) true, (Boolean) true));
+		rootView.findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+		lvDashboard.setVisibility(View.GONE);
 		return rootView;
 	}
 
@@ -113,6 +148,7 @@ public class HomeFragment extends Fragment implements OnClickListener,
 		switch (id) {
 		case REQUEST_DASHBOARD:
 			dashboardPosts.clear();
+			dashboardPostss.clear();
 			Log.v("JSON", result);
 			try {
 				JSONObject json = new JSONObject(result);
@@ -126,7 +162,8 @@ public class HomeFragment extends Fragment implements OnClickListener,
 					Gson gson = new Gson();
 					DashboardPostsVO dashboardPost = gson.fromJson(
 							post.toString(), DashboardPostsVO.class);
-					dashboardPosts.put(i, dashboardPost);
+					if (dashboardPosts.add(dashboardPost))
+						dashboardPostss.add(dashboardPost);
 				}
 				dashboardAdapter.notifyDataSetChanged();
 				getActivity().findViewById(R.id.pbHome)
@@ -158,8 +195,11 @@ public class HomeFragment extends Fragment implements OnClickListener,
 				if (meta.getString("msg").equals("OK")) {
 					// Request User Dashboard
 					new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
-							.execute(UrlComposer
-									.composeUrlUserDashboard((Boolean) true));
+							.execute(UrlComposer.composeUrlUserDashboard(type,
+									(Boolean) true, (Boolean) true));
+					getActivity().findViewById(R.id.pbHome).setVisibility(
+							View.VISIBLE);
+					lvDashboard.setVisibility(View.GONE);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -175,8 +215,11 @@ public class HomeFragment extends Fragment implements OnClickListener,
 				if (meta.getString("msg").equals("OK")) {
 					// Request User Dashboard
 					new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
-							.execute(UrlComposer
-									.composeUrlUserDashboard((Boolean) true));
+							.execute(UrlComposer.composeUrlUserDashboard(type,
+									(Boolean) true, (Boolean) true));
+					getActivity().findViewById(R.id.pbHome).setVisibility(
+							View.VISIBLE);
+					lvDashboard.setVisibility(View.GONE);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -184,7 +227,6 @@ public class HomeFragment extends Fragment implements OnClickListener,
 			break;
 		case REQUEST_DASHBOARD_LOAD_MORE:
 			Log.v("JSON", result);
-			int lastSize = dashboardPosts.size();
 			try {
 				JSONObject json = new JSONObject(result);
 				JSONObject meta = json.getJSONObject("meta");
@@ -197,12 +239,13 @@ public class HomeFragment extends Fragment implements OnClickListener,
 					Gson gson = new Gson();
 					DashboardPostsVO dashboardPost = gson.fromJson(
 							post.toString(), DashboardPostsVO.class);
-					dashboardPosts.put(lastSize + i, dashboardPost);
+					if (dashboardPosts.add(dashboardPost))
+						dashboardPostss.add(dashboardPost);
 				}
 				dashboardAdapter.notifyDataSetChanged();
-				// lvDashboard.setAdapter(dashboardAdapter);
 				isLoading = false;
 				Log.v("Load More", ((Boolean) isLoading).toString());
+				// lvDashboard.setAdapter(dashboardAdapter);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -278,7 +321,7 @@ public class HomeFragment extends Fragment implements OnClickListener,
 		String id = "";
 		String reblogKey = "";
 		switch (v.getId()) {
-		case R.id.tvLike:
+		case R.id.ivLike:
 			id = dashboardAdapter.getItem(lvDashboard.getPositionForView(v)).id;
 			lastId = dashboardAdapter
 					.getItem(lvDashboard.getPositionForView(v)).id;
@@ -293,8 +336,10 @@ public class HomeFragment extends Fragment implements OnClickListener,
 									.getPositionForView(v)).blog_name);
 			new TumblrPostLoader(getActivity(), POST_LIKE).execute(
 					UrlComposer.composeUrlUserLike(), id, reblogKey);
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
 			break;
-		case R.id.tvReblog:
+		case R.id.ivReblog:
 			id = dashboardAdapter.getItem(lvDashboard.getPositionForView(v)).id;
 			lastId = dashboardAdapter
 					.getItem(lvDashboard.getPositionForView(v)).id;
@@ -312,6 +357,10 @@ public class HomeFragment extends Fragment implements OnClickListener,
 							UrlComposer
 									.composeUrlBlogPostReblog(Constants.userInfo.response.user.base_hostname),
 							id, reblogKey);
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case R.id.tvTitle:
 			break;
 		default:
 			break;
@@ -390,7 +439,10 @@ public class HomeFragment extends Fragment implements OnClickListener,
 		lvDashboard.setVisibility(View.GONE);
 		// Request User Dashboard
 		new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
-				.execute(UrlComposer.composeUrlUserDashboard((Boolean) true));
+				.execute(UrlComposer.composeUrlUserDashboard(type,
+						(Boolean) true, (Boolean) true));
+		getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+		lvDashboard.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -416,8 +468,92 @@ public class HomeFragment extends Fragment implements OnClickListener,
 
 	private void loadElements(String lastOffset) {
 		// Request User Dashboard
-		new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
-				.execute(UrlComposer.composeUrlUserDashboard((Boolean) true,
-						lastOffset));
+		new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD_LOAD_MORE)
+				.execute(UrlComposer.composeUrlUserDashboard(type,
+						(Boolean) true, (Boolean) true, lastOffset));
 	}
+
+	@Override
+	public boolean onNavigationItemSelected(int position, long id) {
+		// When the given dropdown item is selected, show its contents in the
+		// container view.
+		switch (position) {
+		case 0:
+			type = null;
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 1:
+			type = "text";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 2:
+			type = "quote";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 3:
+			type = "link";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 4:
+			type = "answer";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 5:
+			type = "chat";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 6:
+			type = "audio";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 7:
+			type = "video";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		case 8:
+			type = "photo";
+			new TumblrRequestLoader(getActivity(), REQUEST_DASHBOARD)
+					.execute(UrlComposer.composeUrlUserDashboard(type,
+							(Boolean) true, (Boolean) true));
+			getActivity().findViewById(R.id.pbHome).setVisibility(View.VISIBLE);
+			lvDashboard.setVisibility(View.GONE);
+			break;
+		default:
+			break;
+		}
+		return false;
+	}
+
 }

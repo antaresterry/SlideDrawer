@@ -11,6 +11,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -83,6 +84,9 @@ public class HomeActivity extends ActionBarActivity {
 			public void onDrawerClosed(View view) {
 				super.onDrawerClosed(view);
 				getSupportActionBar().setTitle(title);
+				if (drawerList.getCheckedItemPosition() == 1)
+					getSupportActionBar().setNavigationMode(
+							ActionBar.NAVIGATION_MODE_LIST);
 				supportInvalidateOptionsMenu();
 				// creates call to onPrepareOptionsMenu()
 			}
@@ -91,6 +95,8 @@ public class HomeActivity extends ActionBarActivity {
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
 				getSupportActionBar().setTitle(drawerTitle);
+				getSupportActionBar().setNavigationMode(
+						ActionBar.NAVIGATION_MODE_STANDARD);
 				supportInvalidateOptionsMenu();
 				// creates call to onPrepareOptionsMenu()
 			}

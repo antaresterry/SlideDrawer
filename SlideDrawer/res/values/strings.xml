@@ -10,7 +10,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="drawer_title">Menu</string>
+    <string name="drawer_title">\t\tMenu</string>
     <string name="action_exit">Close Application</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <string name="button.tumblr">Connect with Tumblr</string>
@@ -19,9 +19,20 @@
     <string name="button.like">Like</string>
 
     <string-array name="menu_drawer">
-        <item>Home</item>
-        <item>Settings</item>
-        <item>About</item>
+        <item>\t\tHome</item>
+        <item>\t\tSettings</item>
+        <item>\t\tAbout</item>
+    </string-array>
+    <string-array name="type">
+        <item>\t\tNone\t</item>
+        <item>\t\tText\t</item>
+        <item>\t\tQuote\t</item>
+        <item>\t\tLink\t</item>
+        <item>\t\tAnswer\t</item>
+        <item>\t\tChat\t</item>
+        <item>\t\tAudio\t</item>
+        <item>\t\tVideo\t</item>
+        <item>\t\tPhoto\t</item>
     </string-array>
 
     <string name="loading_text">Loading..</string>

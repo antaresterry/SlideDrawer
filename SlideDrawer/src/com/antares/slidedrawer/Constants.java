@@ -26,7 +26,9 @@ public class Constants {
 	public static final String REQUEST_PARAM_SIZE = "size";
 	public static final String REQUEST_PARAM_TYPE = "type";
 	public static final String REQUEST_PARAM_NOTES_INFO = "notes_info";
+	public static final String REQUEST_PARAM_REBLOG_INFO = "reblog_info";
 	public static final String REQUEST_PARAM_OFFSET = "offset";
+	public static final String REQUEST_PARAM_BEFORE = "before";
 
 	// Tumblr API - Blog
 	public static final String REQUEST_BLOG_INFO = "/info";

@@ -4,7 +4,7 @@ import com.antares.slidedrawer.Constants;
 
 public class UrlComposer {
 
-	// Blog Info
+	/** Blog Info */
 	public static String composeUrlBlogInfo(String baseHostname) {
 		String composeResult = "";
 
@@ -16,7 +16,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Avatar
+	/** Blog Avatar */
 	public static String composeUrlBlogAvatar(String baseHostname) {
 		String composeResult = "";
 
@@ -26,7 +26,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Avatar With Size
+	/** Blog Avatar With Size */
 	public static String composeUrlBlogAvatar(String baseHostname, int size) {
 		String composeResult = "";
 
@@ -36,7 +36,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Likes
+	/** Blog Likes */
 	public static String composeUrlBlogLikes(String baseHostname) {
 		String composeResult = "";
 
@@ -48,7 +48,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Followers
+	/** Blog Followers */
 	public static String composeUrlBlogFollowers(String baseHostname) {
 		String composeResult = "";
 
@@ -58,7 +58,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Posts
+	/** Blog Posts */
 	public static String composeUrlBlogPosts(String baseHostname) {
 		String composeResult = "";
 
@@ -70,7 +70,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Posts With Type
+	/** Blog Posts With Type */
 	public static String composeUrlBlogPosts(String baseHostname, String type) {
 		String composeResult = "";
 
@@ -82,7 +82,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Posts Queue
+	/** Blog Posts Queue */
 	public static String composeUrlBlogPostsQueue(String baseHostname) {
 		String composeResult = "";
 
@@ -93,7 +93,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Posts Drafts
+	/** Blog Posts Drafts */
 	public static String composeUrlBlogPostsDrafts(String baseHostname) {
 		String composeResult = "";
 
@@ -104,7 +104,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Posts Submissions
+	/** Blog Posts Submissions */
 	public static String composeUrlBlogPostsSubmissions(String baseHostname) {
 		String composeResult = "";
 
@@ -115,7 +115,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Post
+	/** Blog Post */
 	public static String composeUrlBlogPost(String baseHostname) {
 		String composeResult = "";
 
@@ -125,7 +125,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Post Edit
+	/** Blog Post Edit */
 	public static String composeUrlBlogPostEdit(String baseHostname) {
 		String composeResult = "";
 
@@ -136,7 +136,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Post Reblog
+	/** Blog Post Reblog */
 	public static String composeUrlBlogPostReblog(String baseHostname) {
 		String composeResult = "";
 
@@ -147,7 +147,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Blog Post Delete
+	/** Blog Post Delete */
 	public static String composeUrlBlogPostDelete(String baseHostname) {
 		String composeResult = "";
 
@@ -158,7 +158,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Info
+	/** User Info */
 	public static String composeUrlUserInfo() {
 		String composeResult = "";
 
@@ -168,7 +168,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Dashboard
+	/** User Dashboard */
 	public static String composeUrlUserDashboard() {
 		String composeResult = "";
 
@@ -178,7 +178,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Dashboard With Type
+	/** User Dashboard With Type */
 	public static String composeUrlUserDashboard(String type) {
 		String composeResult = "";
 
@@ -189,7 +189,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Dashboard With Notes
+	/** User Dashboard With Notes */
 	public static String composeUrlUserDashboard(Boolean notes_info) {
 		String composeResult = "";
 
@@ -201,35 +201,98 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Dashboard With Type and Notes
-	public static String composeUrlUserDashboard(String type, Boolean notes_info) {
+	/** User Dashboard With Notes and Reblog */
+	public static String composeUrlUserDashboard(Boolean notes_info,
+			Boolean reblog_info) {
 		String composeResult = "";
 
 		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
 				+ Constants.REQUEST_USER_DASHBOARD + "?"
-				+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
 				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
-				+ notes_info.toString();
+				+ notes_info.toString() + "&"
+				+ Constants.REQUEST_PARAM_REBLOG_INFO + "="
+				+ reblog_info.toString();
 
 		return composeResult;
 	}
 
-	// User Dashboard With Type, Notes and Offset
+	/** User Dashboard With Type and Notes */
+	public static String composeUrlUserDashboard(String type, Boolean notes_info) {
+		if (type == null || type.equals("")) {
+			return composeUrlUserDashboard(notes_info);
+		} else {
+			String composeResult = "";
+
+			composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+					+ Constants.REQUEST_USER_DASHBOARD + "?"
+					+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
+					+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+					+ notes_info.toString();
+
+			return composeResult;
+		}
+	}
+
+	/** User Dashboard With Type, Notes, and Reblog */
+	public static String composeUrlUserDashboard(String type,
+			Boolean notes_info, Boolean reblog_info) {
+		if (type == null || type.equals("")) {
+			return composeUrlUserDashboard(notes_info, reblog_info);
+		} else {
+			String composeResult = "";
+			composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+					+ Constants.REQUEST_USER_DASHBOARD + "?"
+					+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
+					+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+					+ notes_info.toString() + "&"
+					+ Constants.REQUEST_PARAM_REBLOG_INFO + "="
+					+ reblog_info.toString();
+
+			return composeResult;
+		}
+	}
+
+	/** User Dashboard With Type, Notes and Offset */
 	public static String composeUrlUserDashboard(String type,
 			Boolean notes_info, String offset) {
-		String composeResult = "";
+		if (type == null || type.equals("")) {
+			return composeUrlUserDashboard(notes_info, offset);
+		} else {
+			String composeResult = "";
 
-		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
-				+ Constants.REQUEST_USER_DASHBOARD + "?"
-				+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
-				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
-				+ notes_info.toString() + "&" + Constants.REQUEST_PARAM_OFFSET
-				+ "=" + offset;
+			composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+					+ Constants.REQUEST_USER_DASHBOARD + "?"
+					+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
+					+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+					+ notes_info.toString() + "&"
+					+ Constants.REQUEST_PARAM_OFFSET + "=" + offset;
 
-		return composeResult;
+			return composeResult;
+		}
 	}
 
-	// User Dashboard With Notes and Offset
+	/** User Dashboard With Type, Notes, Reblog and Offset */
+	public static String composeUrlUserDashboard(String type,
+			Boolean notes_info, Boolean reblog_info, String offset) {
+		if (type == null || type.equals("")) {
+			return composeUrlUserDashboard(notes_info, reblog_info, offset);
+		} else {
+			String composeResult = "";
+
+			composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+					+ Constants.REQUEST_USER_DASHBOARD + "?"
+					+ Constants.REQUEST_PARAM_TYPE + "=" + type + "&"
+					+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+					+ notes_info.toString() + "&"
+					+ Constants.REQUEST_PARAM_REBLOG_INFO + "="
+					+ reblog_info.toString() + "&"
+					+ Constants.REQUEST_PARAM_OFFSET + "=" + offset;
+
+			return composeResult;
+		}
+	}
+
+	/** User Dashboard With Notes and Offset */
 	public static String composeUrlUserDashboard(Boolean notes_info,
 			String offset) {
 		String composeResult = "";
@@ -243,7 +306,23 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Likes
+	/** User Dashboard With Notes, Reblog and Offset */
+	public static String composeUrlUserDashboard(Boolean notes_info,
+			Boolean reblog_info, String offset) {
+		String composeResult = "";
+
+		composeResult = Constants.URL_REQUEST + Constants.REQUEST_USER
+				+ Constants.REQUEST_USER_DASHBOARD + "?"
+				+ Constants.REQUEST_PARAM_NOTES_INFO + "="
+				+ notes_info.toString() + "&"
+				+ Constants.REQUEST_PARAM_REBLOG_INFO + "="
+				+ reblog_info.toString() + "&" + Constants.REQUEST_PARAM_OFFSET
+				+ "=" + offset;
+
+		return composeResult;
+	}
+
+	/** User Likes */
 	public static String composeUrlUserLikes() {
 		String composeResult = "";
 
@@ -253,7 +332,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Following
+	/** User Following */
 	public static String composeUrlUserFollowing() {
 		String composeResult = "";
 
@@ -263,7 +342,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Follow
+	/** User Follow */
 	public static String composeUrlUserFollow() {
 		String composeResult = "";
 
@@ -273,7 +352,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Unfollow
+	/** User Unfollow */
 	public static String composeUrlUserUnfollow() {
 		String composeResult = "";
 
@@ -283,7 +362,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Like
+	/** User Like */
 	public static String composeUrlUserLike() {
 		String composeResult = "";
 
@@ -293,7 +372,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// User Unlike
+	/** User Unlike */
 	public static String composeUrlUserUnlike() {
 		String composeResult = "";
 
@@ -303,7 +382,7 @@ public class UrlComposer {
 		return composeResult;
 	}
 
-	// Tagged
+	/** Tagged */
 	public static String composeUrlTagged() {
 		String composeResult = "";
 
