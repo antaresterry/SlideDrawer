@@ -3,10 +3,10 @@
 
     <color name="bg_gradient_top">#5c76bd</color>
     <color name="bg_gradient_bottom">#2c465d</color>
-    <color name="bg_action_bar">#2c469d</color>
-    <color name="bg_drawer">#4c668d</color>
-    <color name="bg_drawer_item_unselect">#5c769d</color>
-    <color name="bg_drawer_item_select">#5c76bd</color>
+    <color name="bg_action_bar">#529ecc</color>
+    <color name="bg_drawer">#345974</color>
+    <color name="bg_drawer_item_unselect">#345974</color>
+    <color name="bg_drawer_item_select">#529dca</color>
     <color name="text_action_bar">#f2f2f2</color>
     <color name="tumblr_bg">#2c465d</color>
     <color name="tumblr_button_unselected">#529ecc</color>

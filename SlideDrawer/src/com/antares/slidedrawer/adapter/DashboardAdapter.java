@@ -1,5 +1,11 @@
 package com.antares.slidedrawer.adapter;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,8 +16,11 @@ import java.util.TimeZone;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Movie;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Html.ImageGetter;
@@ -22,7 +31,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
@@ -30,6 +41,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.antares.slidedrawer.Constants;
 import com.antares.slidedrawer.R;
 import com.antares.slidedrawer.data.DashboardPostsVO;
+import com.antares.slidedrawer.utils.AnimatedImageView;
 import com.antares.slidedrawer.utils.MemoryCacheSingleton;
 import com.antares.slidedrawer.utils.UrlComposer;
 import com.antares.slidedrawer.utils.VolleySingleton;
@@ -88,6 +100,9 @@ public class DashboardAdapter extends BaseAdapter {
 		TextView tvNotes = (TextView) convertView.findViewById(R.id.tvNotes);
 		TextView tvTags = (TextView) convertView.findViewById(R.id.tvTags);
 		TextView tvBody = (TextView) convertView.findViewById(R.id.tvBody);
+		LinearLayout llPhotos = (LinearLayout) convertView
+				.findViewById(R.id.llPhotos);
+		llPhotos.setVisibility(View.GONE);
 		// TextView tvBodyImage = (TextView)
 		// convertView.findViewById(R.id.tvBodyImage);
 		tvBlogName.setText(getItem(position).blog_name);
@@ -130,6 +145,22 @@ public class DashboardAdapter extends BaseAdapter {
 			tvBody.setText(Html.fromHtml(getItem(position).body));
 		} else if (getItem(position).type.equals("photo")) {
 			tvTitle.setText("[Photo]");
+			llPhotos.setVisibility(View.VISIBLE);
+			llPhotos.removeAllViewsInLayout();
+			for (int i = 0; i < getItem(position).photos.length; i++) {
+				if (!getItem(position).photos[i].original_size.url
+						.contains(".gif")) {
+					NetworkImageView ivPhoto = new NetworkImageView(context);
+					ivPhoto.setImageUrl(
+							getItem(position).photos[i].original_size.url,
+							VolleySingleton.getInstance(context)
+									.getImageLoader());
+					llPhotos.addView(ivPhoto);
+				} else {
+					new TumblrImageLoader(context, llPhotos)
+							.execute(getItem(position).photos[i].original_size.url);
+				}
+			}
 			if (getItem(position).caption == null)
 				tvBody.setVisibility(View.GONE);
 			else
@@ -294,5 +325,82 @@ public class DashboardAdapter extends BaseAdapter {
 			return getBitmapFromCache(source);
 		}
 
+	}
+
+	public class TumblrImageLoader extends AsyncTask<String, Integer, Movie> {
+
+		private Activity context;
+		private LinearLayout llPhotos;
+
+		public TumblrImageLoader(Activity context, LinearLayout llPhotos) {
+			super();
+			this.context = context;
+			this.llPhotos = llPhotos;
+		}
+
+		@Override
+		protected Movie doInBackground(String... params) {
+			try {
+				URL url = new URL(params[0]);
+				URLConnection conn = url.openConnection();
+				InputStream is = conn.getInputStream();
+				BufferedInputStream bis = new BufferedInputStream(is);
+				bis.mark(conn.getContentLength());
+				Movie movie = Movie.decodeStream(bis);
+				bis.close();
+				return movie;
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Movie result) {
+			//
+			if (result != null) {
+				Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();
+				final AnimatedImageView view = new AnimatedImageView(context,
+						result, result.width(), result.height());
+				llPhotos.addView(view);
+				final Handler handler = new Handler();
+				new Thread() {
+					@Override
+					public void run() {
+						// ... setup the movie (using the code from above)
+						// ... create and display the custom view, passing the
+						// movie
+
+						while (!Thread.currentThread().isInterrupted()) {
+							handler.post(new Runnable() {
+								public void run() {
+									view.invalidate();
+								}
+							});
+							try {
+								Thread.sleep(50); // yields 20 fps
+							} catch (InterruptedException e) {
+								Thread.currentThread().interrupt();
+							}
+						}
+					}
+				}.start();
+			}
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected void onPreExecute() {
+
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+
+			super.onProgressUpdate(values);
+		}
 	}
 }

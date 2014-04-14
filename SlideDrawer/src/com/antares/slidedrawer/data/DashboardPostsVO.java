@@ -45,6 +45,19 @@ public class DashboardPostsVO {
 	public String audio_url;
 	public String audio_type;
 	public String short_url;
+	public Photo[] photos;
+
+	public class Photo {
+		public String caption;
+		public Size original_size;
+		public Size[] alt_sizes;
+
+		public class Size {
+			public String url;
+			public Integer width;
+			public Integer height;
+		}
+	}
 
 	@Override
 	public boolean equals(Object o) {

@@ -36,5 +36,6 @@
     </string-array>
 
     <string name="loading_text">Loading..</string>
+    <string name="title_activity_post">Add Post</string>
 
 </resources>
